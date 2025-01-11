@@ -112,8 +112,32 @@ void close()
     SDL_Quit();
 }
 
+void addRandomNumber()
+{
+    vector<pair<int, int>> emptyCells;
+    for (int i = 0; i < 4; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            if (grid[i][j] == 0)
+            {
+                emptyCells.push_back({i, j});
+            }
+        }
+    }
+
+    if (emptyCells.size() > 0)
+    {
+        int index = rand() % emptyCells.size();
+        int value = (rand() % 2 + 1) * 2;
+        grid[emptyCells[index].first][emptyCells[index].second] = value;
+    }
+}
+
 void playMove(string move)
 {
+    addRandomNumber();
+
     if (move == "UP")
     {
         for (int j = 0; j < 4; ++j)
