@@ -33,17 +33,47 @@ void renderGrid()
         for (int j = 0; j < 4; ++j)
         {
             int value = grid[i][j];
-            if (value == 0)
+            switch (value)
             {
+            case 0:
                 SDL_SetRenderDrawColor(renderer, 196, 164, 132, 255); // Empty tile color
-            }
-            else if (value == 2)
-            {
+                break;
+            case 2:
                 SDL_SetRenderDrawColor(renderer, 234, 221, 202, 255); // Color for 2
-            }
-            else if (value == 4)
-            {
+                break;
+            case 4:
                 SDL_SetRenderDrawColor(renderer, 218, 160, 109, 255); // Color for 4
+                break;
+            case 8:
+                SDL_SetRenderDrawColor(renderer, 242, 177, 121, 255); // Color for 8
+                break;
+            case 16:
+                SDL_SetRenderDrawColor(renderer, 245, 149, 99, 255); // Color for 16
+                break;
+            case 32:
+                SDL_SetRenderDrawColor(renderer, 246, 124, 95, 255); // Color for 32
+                break;
+            case 64:
+                SDL_SetRenderDrawColor(renderer, 246, 94, 59, 255); // Color for 64
+                break;
+            case 128:
+                SDL_SetRenderDrawColor(renderer, 237, 207, 114, 255); // Color for 128
+                break;
+            case 256:
+                SDL_SetRenderDrawColor(renderer, 237, 204, 97, 255); // Color for 256
+                break;
+            case 512:
+                SDL_SetRenderDrawColor(renderer, 237, 200, 80, 255); // Color for 512
+                break;
+            case 1024:
+                SDL_SetRenderDrawColor(renderer, 237, 197, 63, 255); // Color for 1024
+                break;
+            case 2048:
+                SDL_SetRenderDrawColor(renderer, 237, 194, 46, 255); // Color for 2048
+                break;
+            default:
+                SDL_SetRenderDrawColor(renderer, 60, 58, 50, 255); // Color for values above 2048
+                break;
             }
 
             SDL_Rect tile = {offsetX + j * (tileSize + spacing), offsetY + i * (tileSize + spacing), tileSize, tileSize};
@@ -134,10 +164,68 @@ void addRandomNumber()
     }
 }
 
+void combineNumbers(string move)
+{
+    if (move == "UP")
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            for (int i = 1; i < 4; ++i)
+            {
+                if (grid[i][j] != 0 && grid[i][j] == grid[i - 1][j])
+                {
+                    grid[i - 1][j] *= 2;
+                    grid[i][j] = 0;
+                }
+            }
+        }
+    }
+    else if (move == "DOWN")
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            for (int i = 2; i >= 0; --i)
+            {
+                if (grid[i][j] != 0 && grid[i][j] == grid[i + 1][j])
+                {
+                    grid[i + 1][j] *= 2;
+                    grid[i][j] = 0;
+                }
+            }
+        }
+    }
+    else if (move == "LEFT")
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            for (int j = 1; j < 4; ++j)
+            {
+                if (grid[i][j] != 0 && grid[i][j] == grid[i][j - 1])
+                {
+                    grid[i][j - 1] *= 2;
+                    grid[i][j] = 0;
+                }
+            }
+        }
+    }
+    else if (move == "RIGHT")
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            for (int j = 2; j >= 0; --j)
+            {
+                if (grid[i][j] != 0 && grid[i][j] == grid[i][j + 1])
+                {
+                    grid[i][j + 1] *= 2;
+                    grid[i][j] = 0;
+                }
+            }
+        }
+    }
+}
+
 void playMove(string move)
 {
-    addRandomNumber();
-
     if (move == "UP")
     {
         for (int j = 0; j < 4; ++j)
@@ -214,6 +302,10 @@ void playMove(string move)
             }
         }
     }
+
+    combineNumbers(move);
+
+    addRandomNumber();
 }
 
 int main(int argc, char *args[])
