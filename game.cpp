@@ -1,5 +1,6 @@
 #include "SDL2/SDL.h"
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -9,9 +10,11 @@ SDL_Renderer *renderer = NULL;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = SCREEN_WIDTH;
 
+vector<vector<int>> grid(4, vector<int>(4, 0));
+
 void clearBackground()
 {
-    SDL_SetRenderDrawColor(renderer, 193, 154, 107, 255);
+    SDL_SetRenderDrawColor(renderer, 150, 121, 105, 255);
     SDL_RenderClear(renderer);
     SDL_RenderSetViewport(renderer, NULL);
     SDL_SetRenderTarget(renderer, NULL);
@@ -19,7 +22,6 @@ void clearBackground()
 
 void renderGrid()
 {
-    SDL_SetRenderDrawColor(renderer, 205, 193, 180, 255);
     int tileSize = SCREEN_WIDTH / 5;
     int spacing = SCREEN_WIDTH / 25;
     int gridSize = 4 * tileSize + 3 * spacing;
@@ -30,11 +32,43 @@ void renderGrid()
     {
         for (int j = 0; j < 4; ++j)
         {
-            SDL_SetRenderDrawColor(renderer, 187, 173, 160, 255);
+            int value = grid[i][j];
+            if (value == 0)
+            {
+                SDL_SetRenderDrawColor(renderer, 196, 164, 132, 255); // Empty tile color
+            }
+            else if (value == 2)
+            {
+                SDL_SetRenderDrawColor(renderer, 234, 221, 202, 255); // Color for 2
+            }
+            else if (value == 4)
+            {
+                SDL_SetRenderDrawColor(renderer, 218, 160, 109, 255); // Color for 4
+            }
+
             SDL_Rect tile = {offsetX + j * (tileSize + spacing), offsetY + i * (tileSize + spacing), tileSize, tileSize};
             SDL_RenderFillRect(renderer, &tile);
         }
     }
+}
+
+vector<vector<int>> generateFirstNumbers()
+{
+    vector<vector<int>> grid(4, vector<int>(4, 0));
+    int x1 = rand() % 4;
+    int y1 = rand() % 4;
+    int x2, y2;
+
+    do
+    {
+        x2 = rand() % 4;
+        y2 = rand() % 4;
+    } while (x1 == x2 && y1 == y2);
+
+    grid[x1][y1] = 2;
+    grid[x2][y2] = 4;
+
+    return grid;
 }
 
 bool init()
@@ -88,8 +122,12 @@ int main(int argc, char *args[])
     {
         cout << "Initialized. " << endl;
 
+        srand(time(0));
+
         SDL_Event e;
         bool quit = false;
+
+        grid = generateFirstNumbers();
 
         clearBackground();
 
