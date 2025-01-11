@@ -112,6 +112,86 @@ void close()
     SDL_Quit();
 }
 
+void playMove(string move)
+{
+    if (move == "UP")
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            for (int i = 1; i < 4; ++i)
+            {
+                if (grid[i][j] != 0)
+                {
+                    int k = i;
+                    while (k > 0 && grid[k - 1][j] == 0)
+                    {
+                        grid[k - 1][j] = grid[k][j];
+                        grid[k][j] = 0;
+                        --k;
+                    }
+                }
+            }
+        }
+    }
+    else if (move == "DOWN")
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            for (int i = 2; i >= 0; --i)
+            {
+                if (grid[i][j] != 0)
+                {
+                    int k = i;
+                    while (k < 3 && grid[k + 1][j] == 0)
+                    {
+                        grid[k + 1][j] = grid[k][j];
+                        grid[k][j] = 0;
+                        ++k;
+                    }
+                }
+            }
+        }
+    }
+    else if (move == "LEFT")
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            for (int j = 1; j < 4; ++j)
+            {
+                if (grid[i][j] != 0)
+                {
+                    int k = j;
+                    while (k > 0 && grid[i][k - 1] == 0)
+                    {
+                        grid[i][k - 1] = grid[i][k];
+                        grid[i][k] = 0;
+                        --k;
+                    }
+                }
+            }
+        }
+    }
+    else if (move == "RIGHT")
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            for (int j = 2; j >= 0; --j)
+            {
+                if (grid[i][j] != 0)
+                {
+                    int k = j;
+                    while (k < 3 && grid[i][k + 1] == 0)
+                    {
+                        grid[i][k + 1] = grid[i][k];
+                        grid[i][k] = 0;
+                        ++k;
+                    }
+                }
+            }
+        }
+    }
+}
+
 int main(int argc, char *args[])
 {
     if (!init())
@@ -139,6 +219,23 @@ int main(int argc, char *args[])
                 {
                 case SDL_QUIT:
                     quit = true;
+                    break;
+                case SDL_KEYDOWN:
+                    switch (e.key.keysym.sym)
+                    {
+                    case SDLK_UP:
+                        playMove("UP");
+                        break;
+                    case SDLK_DOWN:
+                        playMove("DOWN");
+                        break;
+                    case SDLK_LEFT:
+                        playMove("LEFT");
+                        break;
+                    case SDLK_RIGHT:
+                        playMove("RIGHT");
+                        break;
+                    }
                     break;
                 }
             }
