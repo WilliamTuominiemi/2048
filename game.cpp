@@ -1,6 +1,8 @@
 #include "SDL2/SDL.h"
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -27,6 +29,12 @@ void renderGrid()
     int gridSize = 4 * tileSize + 3 * spacing;
     int offsetX = (SCREEN_WIDTH - gridSize) / 2;
     int offsetY = (SCREEN_HEIGHT - gridSize) / 2;
+
+    TTF_Font *font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", spacing * 2);
+    if (font == NULL)
+    {
+        cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << endl;
+    }
 
     for (int i = 0; i < 4; ++i)
     {
@@ -78,6 +86,29 @@ void renderGrid()
 
             SDL_Rect tile = {offsetX + j * (tileSize + spacing), offsetY + i * (tileSize + spacing), tileSize, tileSize};
             SDL_RenderFillRect(renderer, &tile);
+
+            if (value == 0)
+                continue;
+
+            string text = to_string(value);
+
+            SDL_Surface *surface = TTF_RenderText_Blended(font, text.c_str(), {0, 0, 0});
+            if (surface == NULL)
+            {
+                cout << "Failed to render text: " << TTF_GetError() << endl;
+                continue;
+            }
+
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_FreeSurface(surface);
+
+            int textW = surface->w;
+            int textH = surface->h;
+            SDL_Rect textRect = {offsetX + j * (tileSize + spacing) + (tileSize - textW) / 2, offsetY + i * (tileSize + spacing) + (tileSize - textH) / 2, textW, textH};
+
+            SDL_RenderCopy(renderer, texture, NULL, &textRect);
+
+            SDL_DestroyTexture(texture);
         }
     }
 }
@@ -107,6 +138,13 @@ bool init()
     {
         cerr << "Failed to initialize SDL: %s\n"
              << SDL_GetError() << endl;
+        return false;
+    }
+
+    if (TTF_Init() == -1)
+    {
+        cerr << "Failed to initialize SDL_ttf: %s\n"
+             << TTF_GetError() << endl;
         return false;
     }
 
